@@ -4,6 +4,7 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -70,6 +71,37 @@ public class Drop extends ApplicationAdapter {
 
 	@Override
 	public void render() {
+		/* La primera llamada establecera el color claro en azul. Los argumentos son el componente rojo, verde, azul y alfa
+		 * (transparencia) de ese color, cada uno dentro del rango [0, 1]. */
+		Gdx.gl.glClearColor(0, 0, 0.2f, 1);
+		// Borra la pantalla
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+		/* A continuacion, debemos decirle a nuestra camara que se asegure de que este actualizada. Las camaras utilizan una
+		 * entidad matematica llamada matriz que es responsable de configurar el sistema de coordenadas para la representacion.
+		 * Estas matrices deben volver a calcularse cada vez que cambiamos una propiedad de la camara, como su posicion. No
+		 * hacemos esto en nuestro ejemplo simple, pero generalmente es una buena practica actualizar la camara una vez por
+		 * cuadro. */
+		camara.update();
+
+		/* La primera linea le dice SpriteBatch que use el sistema de coordenadas especificado por la camara. Como se dijo
+		 * anteriormente, esto se hace con algo llamado matriz, para ser mas especificos, una matriz de proyeccion. El campo
+		 * camera.combined es tal matriz. A partir de ahi el SpriteBatch renderizara todo en el sistema de coordenadas descrito
+		 * anteriormente.
+		 * 
+		 * A continuacion, le decimos al SpriteBatchque que inicie un nuevo lote. ¿Por que necesitamos esto y que es un lote?
+		 * OpenGL odia nada mas que contarlo sobre imagenes individuales. Quiere que le digan acerca de tantas imagenes para
+		 * renderizar como sea posible a la vez.
+		 * 
+		 * La clase SpriteBatch ayuda a hacer feliz a OpenGL. Registrara todos los comandos de dibujo entre SpriteBatch.begin()
+		 * y SpriteBatch.end(). Una vez que lo llamemos SpriteBatch.end(), enviara todas las solicitudes de dibujo que hicimos a
+		 * la vez, acelerando un poco el renderizado. Todo esto puede parecer engorroso al principio, pero es lo que marca la
+		 * diferencia entre renderizar 500 sprites a 60 cuadros por segundo y renderizar 100 sprites a 20 cuadros por
+		 * segundo. */
+		batch.setProjectionMatrix(camara.combined);
+		batch.begin();
+		batch.draw(baldeImg, balde.x, balde.y);
+		batch.end();
 
 	}
 
