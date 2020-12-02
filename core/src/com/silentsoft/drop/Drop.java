@@ -1,5 +1,7 @@
 package com.silentsoft.drop;
 
+import java.util.Iterator;
+
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -9,9 +11,11 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.TimeUtils;
 
 public class Drop extends ApplicationAdapter {
 
@@ -25,10 +29,10 @@ public class Drop extends ApplicationAdapter {
 	// Un cubo/gota de lluvia tiene un ancho y una altura, expresados ​​en las unidades de nuestro mundo.
 	/* Un cubo/gota de lluvia tiene una representacion grafica, que ya las tenemos en forma de las instancias Texture que
 	 * cargamos. */
-	private Texture gotaImg;
-	private Texture baldeImg;
-	private Sound gotaSonido;
-	private Music lluviaMusica;
+	private Texture dropImg;
+	private Texture bucketImg;
+	private Sound dropSound;
+	private Music rainMusic;
 
 	// Clase de libGDX para almacenar la posicion y tamaño del cubo y la gota
 	private Rectangle bucket;
@@ -36,17 +40,20 @@ public class Drop extends ApplicationAdapter {
 	 * ArrayList. El problema con estos ultimos es que producen basura de diversas formas. La clase Array intenta minimizar
 	 * la basura tanto como sea posible. */
 	private Array<Rectangle> raindrops;
+	/* Tambien necesitamos realizar un seguimiento de la ultima vez que generamos una gota de lluvia, por lo que agregamos
+	 * otro campo. */
+	private long lastDropTime; // Almacenamos el timepo en nanosegundos
 
 	@Override
 	public void create() {
 
 		// Carga las imagenes para la gota y el balde (64x64 pixeles cada una)
-		gotaImg = new Texture(Gdx.files.internal("gota.png"));
-		baldeImg = new Texture(Gdx.files.internal("balde.png")); // El metodo internal() hace referencia a nuestros recursos
+		dropImg = new Texture(Gdx.files.internal("gota.png"));
+		bucketImg = new Texture(Gdx.files.internal("balde.png")); // El metodo internal() hace referencia a nuestros recursos
 
 		// Carga el efecto de sonido de la gota y la "musica" de fondo de lluvia
-		gotaSonido = Gdx.audio.newSound(Gdx.files.internal("gota.wav"));
-		lluviaMusica = Gdx.audio.newMusic(Gdx.files.internal("lluvia.mp3"));
+		dropSound = Gdx.audio.newSound(Gdx.files.internal("gota.wav"));
+		rainMusic = Gdx.audio.newMusic(Gdx.files.internal("lluvia.mp3"));
 
 		/* libGDX diferencia entre los efectos de sonido, que se almacenan en la memoria, y la musica, que se transmite desde
 		 * donde se almacena. La musica suele ser demasiado grande para guardarla en la memoria por completo, de ahi la
@@ -56,14 +63,16 @@ public class Drop extends ApplicationAdapter {
 		 * La carga de una instancia Sound o Music se realiza mediante Gdx.audio.newSound() y Gdx.audio.newMusic(). Ambos
 		 * metodos toman un FileHandle, al igual que el constructor Texture. */
 		// Inicia la reproduccion de la musica de fondo inmediatamente
-		lluviaMusica.setLooping(true);
-		lluviaMusica.play();
+		rainMusic.setLooping(true);
+		rainMusic.play();
 
 		/* Esto asegurara que la camara siempre nos muestre un area de nuestro mundo de juego de 800x480 unidades de ancho. */
 		camara = new OrthographicCamera();
 		camara.setToOrtho(false, 800, 480);
 
+		// BATCH
 		batch = new SpriteBatch();
+		// BATCH
 
 		// El origen del dibujo se encuentra en la esquina inferior izquierda de la pantalla.
 		/* Queremos que el cubo este 20 pixeles por encima del borde inferior de la pantalla y centrado horizontalmente. */
@@ -74,6 +83,10 @@ public class Drop extends ApplicationAdapter {
 		 * resoluciones objetivo. */
 		bucket.width = 64;
 		bucket.height = 64;
+
+		/* Añadiendo las gotas de lluvia */
+		raindrops = new Array<Rectangle>();
+		spawnRaindrop();
 
 	}
 
@@ -111,9 +124,15 @@ public class Drop extends ApplicationAdapter {
 		 * diferencia entre renderizar 500 sprites a 60 cuadros por segundo y renderizar 100 sprites a 20 cuadros por
 		 * segundo. */
 		batch.setProjectionMatrix(camara.combined);
+
+		// Crea un nuevo batch para dibujar el cubo y las gotas
 		batch.begin();
-		batch.draw(baldeImg, bucket.x, bucket.y);
+		batch.draw(bucketImg, bucket.x, bucket.y);
+		for (Rectangle raindrop : raindrops)
+			batch.draw(dropImg, raindrop.x, raindrop.y);
 		batch.end();
+
+		/* Renderizando el cubo */
 
 		/* Hacer que el cubo se mueva (toque/mouse) */
 
@@ -135,6 +154,8 @@ public class Drop extends ApplicationAdapter {
 			bucket.x = touchPos.x - 64 / 2;
 		}
 
+		/* Hacer que el cubo se mueva (toque/mouse) */
+
 		/* Hacer que el cubo se mueva (teclado) */
 
 		/* Queremos que el cubo se mueva sin aceleracion, a doscientos pixeles/unidades por segundo, ya sea hacia la izquierda o
@@ -152,12 +173,49 @@ public class Drop extends ApplicationAdapter {
 		if (bucket.x < 0) bucket.x = 0;
 		if (bucket.x > 800 - 64) bucket.x = 800 - 64;
 
-		/* Añadiendo las gotas de lluvia */
+		/* Hacer que el cubo se mueva (teclado) */
+
+		// Verifica cuanto tiempo ha pasado desde que generamos una nueva gota de lluvia y crea una nueva si es necesario
+		if (TimeUtils.nanoTime() - lastDropTime > 1000000000) spawnRaindrop();
+
+		/* Tambien necesitamos hacer que nuestras gotas de lluvia se muevan, tomemos la ruta facil y hagamos que se muevan a una
+		 * velocidad constante de 200 pixeles/unidades por segundo. Si la gota de lluvia esta debajo del borde inferior de la
+		 * pantalla, la eliminamos de la matriz. */
+		for (Iterator<Rectangle> iter = raindrops.iterator(); iter.hasNext();) {
+			Rectangle raindrop = iter.next();
+			raindrop.y -= 200 * Gdx.graphics.getDeltaTime();
+			if (raindrop.y + 64 < 0) iter.remove();
+
+			// Si una gota de lluvia golpea el cubo, reproduce el sonido de gota y elimina la gota de la matriz
+			if (raindrop.overlaps(bucket)) { // Comprueba si este rectangulo se superpone con otro rectangulo
+				dropSound.play();
+				iter.remove();
+			}
+		}
 
 	}
 
+	/* Los desechables son generalmente recursos nativos que no son manejados por el recolector de basura de Java. Esta es
+	 * la razon por la que necesitamos deshacernos de ellos manualmente. */
 	@Override
 	public void dispose() {
+		dropImg.dispose();
+		bucketImg.dispose();
+		dropSound.dispose();
+		rainMusic.dispose();
+		batch.dispose();
+	}
 
+	/* Para facilitar la creacion de gotas de lluvia, escribiremos un metodo llamado spawnRaindrop() que instancia un nuevo
+	 * objeto Rectangle, la establece en una posicion aleatoria en el borde superior de la pantalla y la agrega a la matriz
+	 * raindrops. */
+	private void spawnRaindrop() {
+		Rectangle raindrop = new Rectangle();
+		raindrop.x = MathUtils.random(0, 800 - 64); // Devuelve un numero aleatorio entre 0 y 800 - 64
+		raindrop.y = 480;
+		raindrop.width = 64;
+		raindrop.height = 64;
+		raindrops.add(raindrop);
+		lastDropTime = TimeUtils.nanoTime(); // Registra el tiempo actual en nano segundos
 	}
 }
