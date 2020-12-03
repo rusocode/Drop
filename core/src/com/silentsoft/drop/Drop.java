@@ -88,6 +88,8 @@ public class Drop extends ApplicationAdapter {
 		raindrops = new Array<Rectangle>();
 		spawnRaindrop();
 
+		System.out.println(TimeUtils.nanoTime());
+
 	}
 
 	// Renderizando el cubo
@@ -177,13 +179,13 @@ public class Drop extends ApplicationAdapter {
 
 		// Verifica cuanto tiempo ha pasado desde que generamos una nueva gota de lluvia y crea una nueva si es necesario
 		if (TimeUtils.nanoTime() - lastDropTime > 1000000000) spawnRaindrop();
-
+		                                          
 		/* Tambien necesitamos hacer que nuestras gotas de lluvia se muevan, tomemos la ruta facil y hagamos que se muevan a una
 		 * velocidad constante de 200 pixeles/unidades por segundo. Si la gota de lluvia esta debajo del borde inferior de la
 		 * pantalla, la eliminamos de la matriz. */
 		for (Iterator<Rectangle> iter = raindrops.iterator(); iter.hasNext();) {
 			Rectangle raindrop = iter.next();
-			raindrop.y -= 200 * Gdx.graphics.getDeltaTime();
+			raindrop.y -= 300 * Gdx.graphics.getDeltaTime();
 			if (raindrop.y + 64 < 0) iter.remove();
 
 			// Si una gota de lluvia golpea el cubo, reproduce el sonido de gota y elimina la gota de la matriz
