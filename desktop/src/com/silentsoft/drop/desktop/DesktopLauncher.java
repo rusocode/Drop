@@ -14,7 +14,5 @@ public class DesktopLauncher {
 
 		new LwjglApplication(new Drop(), config);
 
-		new LwjglApplication(new Drop(), config);
-
 	}
 }
