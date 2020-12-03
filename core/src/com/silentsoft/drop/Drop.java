@@ -21,6 +21,7 @@ public class Drop extends Game {
 		this.setScreen(new MainMenuScreen(this)); // Le pasa un objeto Drop al menu principal
 	}
 
+	// Ejecuta cada fotograma, lo que probablemente sea unas 60 veces por segundo en este momento
 	public void render() {
 		super.render();
 	}
