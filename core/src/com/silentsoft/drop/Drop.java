@@ -4,6 +4,10 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+/**
+ * La clase Game es responsable de manejar multiples pantallas y proporciona algunos metodos auxiliares para este
+ * proposito, junto con una implementacion de ApplicationListener para su uso.
+ */
 public class Drop extends Game {
 
 	/* El SpriteBatch es una clase especial que se utiliza para dibujar imagenes en 2D, al igual que las texturas
