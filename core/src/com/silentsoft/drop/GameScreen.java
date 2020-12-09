@@ -22,7 +22,6 @@ public class GameScreen implements Screen {
 
 	final Drop game;
 
-	// Camara tridimensional
 	private OrthographicCamera camara;
 
 	// Recursos
@@ -43,14 +42,14 @@ public class GameScreen implements Screen {
 	 * otro campo. */
 	private long lastDropTime;
 
-	private int dropsGathered;
+	private int dropsCounts;
 
 	public GameScreen(final Drop game) {
 		this.game = game;
 
 		// Carga las imagenes para la gota y el cubo (64x64 pixeles cada una)
-		gotaImg = new Texture(Gdx.files.internal("gota.png"));
-		baldeImg = new Texture(Gdx.files.internal("cubo.png")); // El metodo internal() hace referencia a los recursos del proyecto
+		gotaImg = new Texture(Gdx.files.internal("cogollo.png"));
+		baldeImg = new Texture(Gdx.files.internal("frasco.png")); // El metodo internal() hace referencia a los recursos del proyecto
 
 		/* libGDX diferencia entre los efectos de sonido, que se almacenan en memoria, y la musica, que se transmite desde donde
 		 * se almacena. La musica suele ser demasiado grande para guardarla en la memoria por completo, de ahi la diferencia.
@@ -108,7 +107,7 @@ public class GameScreen implements Screen {
 		 * segundo. */
 		game.batch.setProjectionMatrix(camara.combined);
 		game.batch.begin();
-		game.font.draw(game.batch, "Drops Collected: " + dropsGathered, 0, 480);
+		game.font.draw(game.batch, "Cogollos atrapados: " + dropsCounts, 0, 480);
 		game.batch.draw(baldeImg, cubo.x, cubo.y); // Dibuja sobre el rectangulo de la posicion x/y la textura
 		for (Rectangle raindrop : gotas)
 			game.batch.draw(gotaImg, raindrop.x, raindrop.y);
@@ -160,8 +159,8 @@ public class GameScreen implements Screen {
 		// Por defecto, el origen del rectangulo comienza es en la esquina inferior izquierda de la pantalla
 		cubo.x = 800 / 2 - 64 / 2; // Centrado horizontalmente
 		cubo.y = 20; // 20 pixeles por encima del borde inferior de la pantalla
-		/* El ancho y la altura del rectangulo se establecen en 64x64, nuestra porcion mas pequeña de nuestra altura de
-		 * resoluciones objetivo. */
+		/* El ancho y la altura del rectangulo se establecen en 64x64 (tamaño en pixeles de la textura), nuestra porcion mas
+		 * pequeña de nuestra altura de resoluciones objetivo. */
 		cubo.width = 64;
 		cubo.height = 64;
 	}
@@ -227,7 +226,7 @@ public class GameScreen implements Screen {
 			if (raindrop.y + 64 < 0) eliminarGota(gota);
 			// Si la gota toca el cubo, entonces...
 			if (raindrop.overlaps(cubo)) { // Comprueba si este rectangulo se superpone con otro rectangulo
-				dropsGathered++;
+				dropsCounts++;
 				dropSound.play();
 				eliminarGota(gota);
 			}

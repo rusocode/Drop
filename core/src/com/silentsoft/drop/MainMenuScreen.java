@@ -10,6 +10,7 @@ public class MainMenuScreen implements Screen {
 
 	final Drop game;
 
+	// Camara tridimensional
 	OrthographicCamera camara;
 
 	// Como la interfaz Screen no implementa un metodo create(), entonces se usa un constructor en su lugar
@@ -36,8 +37,8 @@ public class MainMenuScreen implements Screen {
 
 		game.batch.begin();
 		// Representa el texto en pantalla
-		game.font.draw(game.batch, "Welcome to Drop!!! ", 100, 150);
-		game.font.draw(game.batch, "Tap anywhere to begin!", 100, 100);
+		game.font.draw(game.batch, "Pantalla principal", 100, 150);
+		game.font.draw(game.batch, "Toca en cualquier lado para empezar!", 100, 100);
 		game.batch.end();
 
 		// Si se toca la pantalla, configura la pantalla de juego en una instancia de GameScreen e desecha la instancia actual 

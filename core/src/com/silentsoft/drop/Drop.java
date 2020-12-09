@@ -20,7 +20,7 @@ public class Drop extends Game {
 
 		batch = new SpriteBatch(); // Representa objetos en la pantalla, como texturas
 		font = new BitmapFont(); // Representa texto en la pantalla (fuente Arial predeterminada de LibGDX)
-		this.setScreen(new MainMenuScreen(this)); // Le pasa un objeto Drop al menu principal
+		this.setScreen(new MainMenuScreen(this)); // Le pasa un objeto Game al menu principal
 
 	}
 
