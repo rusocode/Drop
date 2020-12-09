@@ -17,6 +17,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.silentsoft.drop.Drop;
+import com.silentsoft.drop.utils.Recursos;
 
 // Pantalla del juego
 public class GameScreen extends View {
@@ -49,8 +50,8 @@ public class GameScreen extends View {
 		this.game = game;
 
 		// Carga las imagenes para la gota y el cubo (64x64 pixeles cada una)
-		gotaImg = new Texture(Gdx.files.internal("cogollo.png"));
-		baldeImg = new Texture(Gdx.files.internal("frasco.png")); // El metodo internal() hace referencia a los recursos del proyecto
+		gotaImg = new Texture(Gdx.files.internal(Recursos.RUTA_COGOLLO));
+		baldeImg = new Texture(Gdx.files.internal(Recursos.RUTA_FRASCO)); // El metodo internal() hace referencia a los recursos del proyecto
 
 		/* libGDX diferencia entre los efectos de sonido, que se almacenan en memoria, y la musica, que se transmite desde donde
 		 * se almacena. La musica suele ser demasiado grande para guardarla en la memoria por completo, de ahi la diferencia.
@@ -59,8 +60,8 @@ public class GameScreen extends View {
 		 * 
 		 * La carga de una instancia Sound o Music se realiza mediante Gdx.audio.newSound() y Gdx.audio.newMusic(). Ambos
 		 * metodos toman un FileHandle, al igual que el constructor Texture. */
-		dropSound = Gdx.audio.newSound(Gdx.files.internal("gota.wav"));
-		rainMusic = Gdx.audio.newMusic(Gdx.files.internal("lluvia.mp3"));
+		dropSound = Gdx.audio.newSound(Gdx.files.internal(Recursos.RUTA_SONIDO_GOTA));
+		rainMusic = Gdx.audio.newMusic(Gdx.files.internal(Recursos.RUTA_SONIDO_LLUVIA));
 		rainMusic.play(); // Reproduce la musica
 		rainMusic.setLooping(true); // Vuelve a reproducir la musica
 
