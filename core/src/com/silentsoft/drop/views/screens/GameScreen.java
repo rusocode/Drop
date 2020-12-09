@@ -1,4 +1,4 @@
-package com.silentsoft.drop;
+package com.silentsoft.drop.views.screens;
 
 import java.util.Iterator;
 
@@ -16,9 +16,10 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
+import com.silentsoft.drop.Drop;
 
 // Pantalla del juego
-public class GameScreen implements Screen {
+public class GameScreen extends View {
 
 	final Drop game;
 
@@ -122,25 +123,9 @@ public class GameScreen implements Screen {
 	}
 
 	@Override
-	public void resize(int width, int height) {
-	}
-
-	@Override
 	public void show() {
 		// Inicia la reproduccion de la musica de fondo cuando se muestra la pantalla
 		rainMusic.play();
-	}
-
-	@Override
-	public void hide() {
-	}
-
-	@Override
-	public void pause() {
-	}
-
-	@Override
-	public void resume() {
 	}
 
 	/* Los desechables son generalmente recursos nativos que no son manejados por el recolector de basura de Java. Esta es

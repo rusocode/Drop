@@ -1,12 +1,13 @@
-package com.silentsoft.drop;
+package com.silentsoft.drop.views.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.silentsoft.drop.Drop;
 
 // Menu principal
-public class MainMenuScreen implements Screen {
+public class MainMenuScreen extends View {
 
 	final Drop game;
 
@@ -48,29 +49,5 @@ public class MainMenuScreen implements Screen {
 		}
 	}
 
-	@Override
-	public void resize(int width, int height) {
-
-	}
-
-	@Override
-	public void pause() {
-
-	}
-
-	@Override
-	public void resume() {
-
-	}
-
-	@Override
-	public void hide() {
-
-	}
-
-	@Override
-	public void dispose() {
-
-	}
 
 }
