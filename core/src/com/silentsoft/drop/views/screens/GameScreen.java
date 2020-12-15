@@ -5,6 +5,7 @@ import java.util.Iterator;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
@@ -20,7 +21,7 @@ import com.silentsoft.drop.Drop;
 import com.silentsoft.drop.utils.Recursos;
 
 // Pantalla del juego
-public class GameScreen extends View {
+public class GameScreen extends ScreenAdapter {
 
 	final Drop game;
 

@@ -2,12 +2,13 @@ package com.silentsoft.drop.views.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.silentsoft.drop.Drop;
 
 // Menu principal
-public class MainMenuScreen extends View {
+public class MainMenuScreen extends ScreenAdapter {
 
 	final Drop game;
 
